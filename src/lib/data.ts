@@ -12,11 +12,28 @@ export const site = {
   sub: "M.S. Software Engineering @ Arizona State. I build full-stack systems and production ML — from schema to model to UI.",
 };
 
-export const stats = [
-  { label: "Master's GPA", value: "4.00 / 4.00" },
-  { label: "Records processed", value: "2.3M+" },
-  { label: "Inference latency cut", value: "35%" },
-  { label: "Concurrent users served", value: "100+" },
+export const companies = [
+  "Appy.Yo",
+  "RoseAI",
+  "TechXi",
+  "Elluminati",
+  "Networld",
+  "ASU (part-time)",
+];
+
+export const highlights: { title: string; body: string }[] = [
+  {
+    title: "6 companies",
+    body: `Worked across ${companies.join(" · ")}.`,
+  },
+  {
+    title: "15+ projects",
+    body: "5+ shipped from scratch into production; the rest span research and coursework.",
+  },
+  {
+    title: "Open May 2026",
+    body: "Available for full-time software engineering or data science roles.",
+  },
 ];
 
 export type ExperienceItem = {
@@ -84,6 +101,7 @@ export type Project = {
   title: string;
   blurb: string;
   description: string;
+  details?: string;
   stack: string[];
   metrics: { label: string; value: string }[];
   links: { github?: string; live?: string };
@@ -156,6 +174,21 @@ export const projects: Project[] = [
     gradient: ["#f97316", "#7c2d12"],
   },
   {
+    id: "radiate-sign",
+    title: "Radiate Sign — Shopify Builder",
+    blurb: "Interactive custom-sign builder embedded in a live Shopify storefront.",
+    description:
+      "Shipped an interactive product-customization flow for Radiate Sign, a Canadian signage business. Shoppers configure signs on the /builder page with real-time previews that hand off cleanly into Shopify's native product and cart flow.",
+    stack: ["Shopify", "Liquid", "JavaScript", "HTML", "CSS"],
+    metrics: [
+      { label: "Platform", value: "Shopify" },
+      { label: "Status", value: "Live" },
+    ],
+    links: { live: "https://www.radiatesign.ca/builder" },
+    featured: true,
+    gradient: ["#ef4444", "#f59e0b"],
+  },
+  {
     id: "graph-analytics",
     title: "Scalable Graph Analytics Pipeline",
     blurb: "Kubernetes + Kafka streaming NYC Taxi records into Neo4j; PageRank & BFS at scale.",
@@ -187,17 +220,90 @@ export const projects: Project[] = [
   },
   {
     id: "forticast",
-    title: "FortiCast — Adversarially Robust Forecasting",
-    blurb: "Wavelet-based TSAS defense improving robustness by 22% on time-series models.",
+    title: "FortiCast — Adversarial Robustness for Time-Series Forecasting",
+    blurb: "Benchmark + GATA attack + wavelet-based TSAS defense across 5 forecasting models.",
     description:
-      "Stress-tested LSTM, DeepAR, and Transformer models under FGSM, PGD, and custom temporal attacks. Introduced a wavelet-based TSAS defense improving adversarial robustness by 22%.",
-    stack: ["PyTorch", "LSTM", "Transformers", "FGSM", "PGD"],
+      "End-to-end adversarial robustness study across 5 forecasting architectures (Ridge, LSTM, DeepAR, MiniInformer, TFT) on 3 datasets (UCI Electricity, M4 Daily, Household Power). Designed GATA — a gradient-aware temporal attack ~15–25% stronger than PGD at the same perturbation budget — and TSAS, a wavelet-based smoothing defense that recovers a large share of clean performance at only ~2% inference overhead, validated against adaptive attacks.",
+    details:
+      "Forecasting models drive real decisions in load planning, demand forecasting, and financial prediction, but most adversarial ML work focuses on image classification. FortiCast benchmarked robustness end-to-end: 5 architectures spanning classical-to-modern (Ridge, LSTM, DeepAR, MiniInformer, TFT) trained to solid clean-data baselines first on UCI Electricity Load, M4 Daily, and Household Power Consumption. Attacks covered FGSM, PGD, Elastic (L1/L2 hybrid), and a custom GATA (Gradient-Aware Temporal Attack) that scales perturbations by time-step importance using attention weights + recency — respecting temporal structure instead of naively bounding L∞ like on images. Core findings: forecasting models are fragile — perturbations under 5% of signal magnitude degraded MAE by 40–180%, and transformers (MiniInformer, TFT) were MORE vulnerable than LSTM in several settings because attention concentrates perturbation energy on the most-relied-on steps. Defenses tested: adversarial training (~50–60% recovery but 3× training cost, per-model), autoencoder anomaly detection (caught ~85% of attacked inputs but detection-only, no correction), and TSAS — Daubechies-4 wavelet soft-thresholding preprocessor that recovered comparable performance to adversarial training at only ~2% inference latency, with no retraining needed. TSAS held up under ADAPTIVE attacks (attacker aware of defense, backprops through wavelet), which is what makes it credible — most defense papers only test non-adaptive. Stack: PyTorch, GluonTS, PyWavelets, Hydra + W&B for ~600 experimental runs. Extensions: query-based black-box attacks, generalizing TSAS without gradient access.",
+    stack: ["PyTorch", "GluonTS", "PyWavelets", "Hydra", "W&B"],
     metrics: [
-      { label: "Robustness", value: "+22%" },
+      { label: "Experimental runs", value: "~600" },
+      { label: "GATA vs PGD", value: "+15–25% stronger" },
+      { label: "TSAS overhead", value: "~2%" },
     ],
     links: {},
     featured: false,
     gradient: ["#7c3aed", "#f43f5e"],
+  },
+  {
+    id: "lexrag",
+    title: "LexRAG — Legal Document Q&A",
+    blurb: "Hybrid retrieval + citation verifier; dropped hallucinated-citation rate from ~8% to <1%.",
+    description:
+      "RAG system for legal document Q&A built around legal workflow's asymmetric error cost — a hallucinated citation is catastrophic, a missed one is merely annoying. Structural clause-aware chunking, hybrid dense + BM25 retrieval via reciprocal rank fusion, cross-encoder reranking, and a citation-verifier agent that validates every quoted span against retrieved chunks. Landed ~87% Precision@5 and <1% hallucinated-citation rate at ~2.5s p95 latency.",
+    details:
+      "Legal RAG has an asymmetric error cost that drives the whole architecture. Ingestion runs three passes over multi-format documents (PDF, DOCX, scanned images) using PyMuPDF for clean docs and Tesseract OCR for scans, enriching each chunk with metadata (jurisdiction, parties, date, doc type, clause tags). Chunking is by clause with parent heading prepended (~300–500 tokens, ~20% overlap), treating size as a soft constraint that yields to structural integrity — default 500-token splitters destroy clause boundaries. Retrieval: metadata-filter-first (jurisdiction, date, doc type) → hybrid dense (sentence-transformers + Chroma) + BM25 (Elasticsearch) via reciprocal rank fusion → cross-encoder rerank (ms-marco-MiniLM) narrowing top 50 → top 5–8. Hybrid lifted Precision@5 by ~18% over dense-only; reranking improved citation faithfulness ~25%. Generation: 3 agents in critical path (Retriever, Synthesizer at temp 0.1 with strict [DOC_ID:page] citation format and refusal language, Verifier that parses every citation and confirms the quoted span actually appears in the retrieved chunk) + 2 sidecars (Redactor via Presidio, Auditor with append-only logs). Verifier dropped hallucinated-citation rate from ~8% baseline to <1%. Eval on ~300 curated legal questions with gold answers/citations: ~87% Precision@5, <1% hallucinations, ~2.5s p95 e2e. Stack: Python, PyMuPDF, Tesseract, sentence-transformers, Chroma, Elasticsearch, cross-encoder, on-prem Llama for PII-sensitive use, FastAPI microservices, React with a 3-tier response panel (answer / legal rationale / evidence with exact cited passages). Extensions: overruled-case detection, domain-specific embedding fine-tuning, calibrated confidence labels.",
+    stack: ["Python", "FastAPI", "sentence-transformers", "Chroma", "Elasticsearch", "PyMuPDF", "Tesseract", "React"],
+    metrics: [
+      { label: "Precision@5", value: "~87%" },
+      { label: "Hallucinations", value: "<1%" },
+      { label: "p95 latency", value: "~2.5s" },
+    ],
+    links: {},
+    featured: false,
+    gradient: ["#0f172a", "#a855f7"],
+  },
+  {
+    id: "sprintlab",
+    title: "SprintLab — Agile Scrum Simulator",
+    blurb: "Flight-simulator for Agile: role-based gameplay with stochastic sprint events.",
+    description:
+      "Educational web platform where students assume Scrum Master, Product Owner, or Developer roles and run configurable sprints end-to-end. Nine modular use cases cover the full Scrum cycle; the simulation engine uses beta distributions (that shift with user accuracy), weighted blocker sampling, and probabilistic spike outcomes to teach decision-making under uncertainty rather than just Scrum vocabulary.",
+    details:
+      "SprintLab (originally ScrumBoard Simulator) is a flight-simulator for Agile. Users assume one of three Scrum roles and run configurable sprints: backlog definition → planning with effort estimation → execution with probability-driven events → retrospective whose outputs feed the next sprint's parameters. Nine modular use cases cover the cycle (role assignment, story creation, backlog grooming, point estimation, sprint planning, blocker resolution, spike execution, sprint review, retrospective logging), each unit-testable and swappable. Simulation engine: effort estimation uses a beta distribution that shifts based on the user's historical estimation accuracy (so it gets harder as you get better — keeping the learning curve meaningful); blockers sampled from weighted pool based on sprint length + team size; spikes have configurable outcome distributions; velocity from actual completed points vs. planned so users see the real plan-vs-execution gap. Design tension: pedagogical clarity vs. realism — erred toward clarity for v1 (deterministic DoD, explicit action items in retros) because students can't learn from a simulation they can't trace. Stack: web frontend with role-based interaction, configurable backend simulation engine driving probability models + state transitions, scenario configuration layer letting instructors tune sprint length, team size, event probabilities, and estimation noise per session. Extensions: multi-user synchronous sessions for whole classes, LLM-driven stakeholder agent generating realistic mid-sprint backlog changes, instructor analytics on which decisions trip students up.",
+    stack: ["Web", "Simulation Engine", "Probability Models", "Role-based UX"],
+    metrics: [
+      { label: "Scrum roles", value: "3" },
+      { label: "Use cases", value: "9" },
+    ],
+    links: {},
+    featured: false,
+    gradient: ["#16a34a", "#0ea5e9"],
+  },
+  {
+    id: "gru-traffic",
+    title: "GRU Traffic Flow Forecasting",
+    blurb: "PyTorch GRU with recursive multi-step prediction for real-time traffic management.",
+    description:
+      "Single-layer GRU (128 hidden units, 0.2 dropout) in PyTorch trained with Adam + mixed-precision (FP16/FP32) cutting memory ~40%. Implemented a recursive autoregressive prediction loop at inference so errors compound realistically — a harder test than the single-step MSE most forecasting baselines report. Trajectory plots confirmed the model learned actual temporal dynamics (morning/evening peaks, weekend dips) rather than regressing to the mean.",
+    details:
+      "Traffic is a hard forecasting problem — strong short-term dependencies + long-term periodicities (rush hour, day-of-week), which classical ARIMA struggles to capture simultaneously. Model: 1-layer GRU, 128 hidden units, dropout 0.2, linear projection head producing scalar flow predictions. Chose GRU over LSTM deliberately — ~25% fewer parameters (merged update gate) for the same hidden size → faster training + lower memory without a meaningful accuracy drop on this data, and cheaper for edge deployment. Training: Adam @ lr 0.001 with mixed-precision (torch.cuda.amp) cutting memory ~40%, early stopping on validation MSE, ReduceLROnPlateau @ 0.5 factor, validation set distribution matching test (with time series you can easily fool yourself validating on data temporally too close to train). Core contribution: autoregressive prediction loop at inference — the model's own outputs feed back as inputs for subsequent steps, so errors compound as they would in production. This is how you actually find out whether the model learned temporal structure or just learned to copy the previous observation. Evaluated with MSE + trajectory overlays (a single MSE hides whether the model got the shape or just the level). Stack: PyTorch, torch.cuda.amp, Pandas, NumPy, Matplotlib. Extensions: add contextual features (weather, time of day, day-of-week), transformer architecture for longer horizons where GRU loses long-range context, quantile regression heads for prediction intervals.",
+    stack: ["PyTorch", "AMP", "Pandas", "NumPy", "Matplotlib"],
+    metrics: [
+      { label: "Params vs LSTM", value: "−25%" },
+      { label: "Memory cut", value: "~40%" },
+    ],
+    links: {},
+    featured: false,
+    gradient: ["#06b6d4", "#84cc16"],
+  },
+  {
+    id: "sopa",
+    title: "SOPA — A Programming Language Built from Scratch",
+    blurb: "Minimal language + compiler with hand-written lexer, DCG grammar, Yacc parser, tree-walking interpreter.",
+    description:
+      "Designed and implemented SOPA (Simple Original Programming Architecture) end-to-end: a high-level language for non-programmers with integers, strings, booleans, arithmetic + logical operators, repeat/unless-until loops, a ternary, and built-in sqrt. Hand-written lexer, DCG-based grammar prototyping in Prolog, Yacc for LALR parsing, and a tree-walking interpreter — deliberately no ANTLR/LLVM so I had to solve the interesting parts myself.",
+    details:
+      "SOPA (Simple Original Programming Architecture) was built to understand the layer below Python/Java — lexing, parsing, grammar design, execution — by designing a language end-to-end rather than leaning on frameworks that abstract the interesting parts away. Syntax: every program wrapped between start/stop keywords, which sounds trivial but gives the parser a clean program boundary and dramatically better error messages because the root node is always known. Types: int, string, bool. Operators: arithmetic, relational (<, ==), logical (and/or/not). Non-trivial constructs: repeat loop for counted iteration, unless-until loop (alternative while semantics), ternary operator for inline conditionals, built-in sqrt (forced handling a native function call inside the grammar without special-casing). Implementation: Definite Clause Grammar (DCG) in Prolog + Yacc for parser generation, running on macOS. DCG let me prototype syntax and iterate on ambiguities with natural backtracking; Yacc gave LALR parser generation for the production version. Lexer was hand-written (not Flex) — taught me tokenization, whitespace handling, keyword-vs-identifier disambiguation, emitting clean token streams. Execution via sopa_runner.sh: source file → lexer → Yacc parser → AST → tree-walking interpreter. The most educational part was grammar disambiguation — my first draft had a shift-reduce conflict around ternary and unless-until because both could begin with similar token sequences. Resolved by making ternary strictly right-associative and requiring explicit block delimiters on loops, eliminating ambiguity cleanly. Extensions: proper type checker (currently dynamically-typed with runtime errors), user-defined functions (only built-in sqrt today), bytecode compilation replacing the tree-walking interpreter.",
+    stack: ["Prolog", "Yacc", "DCG", "Shell", "Compiler Design"],
+    metrics: [
+      { label: "Data types", value: "3" },
+      { label: "Hand-built", value: "Lexer + parser" },
+    ],
+    links: {},
+    featured: false,
+    gradient: ["#fbbf24", "#ef4444"],
   },
 ];
 

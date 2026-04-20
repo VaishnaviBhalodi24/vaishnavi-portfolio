@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { education, stats } from "@/lib/data";
+import { education, highlights } from "@/lib/data";
 
 export function About() {
   return (
@@ -64,21 +64,21 @@ export function About() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 self-start">
-            {stats.map((s, i) => (
+          <div className="flex flex-col gap-4 self-start">
+            {highlights.map((h, i) => (
               <motion.div
-                key={s.label}
+                key={h.title}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-10% 0px" }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
                 className="card p-5"
               >
-                <div className="display text-2xl font-semibold text-[var(--ink)] md:text-3xl">
-                  {s.value}
+                <div className="display text-xl font-semibold text-[var(--ink)]">
+                  {h.title}
                 </div>
-                <p className="mt-2 text-xs uppercase tracking-[0.12em] text-[var(--ink-mute)]">
-                  {s.label}
+                <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
+                  {h.body}
                 </p>
               </motion.div>
             ))}

@@ -1,4 +1,13 @@
-import { education, experiences, leadership, projects, site, skillGroups, stats } from "@/lib/data";
+import {
+  companies,
+  education,
+  experiences,
+  highlights,
+  leadership,
+  projects,
+  site,
+  skillGroups,
+} from "@/lib/data";
 
 export function buildSystemPrompt(): string {
   const exp = experiences
@@ -17,7 +26,8 @@ export function buildSystemPrompt(): string {
         .filter(Boolean)
         .join(" · ");
       const metrics = p.metrics.map((m) => `${m.label}: ${m.value}`).join(", ");
-      return `• ${p.title}\n  ${p.description}\n  Stack: ${p.stack.join(", ")}${metrics ? `\n  Metrics: ${metrics}` : ""}${links ? `\n  ${links}` : ""}`;
+      const longDetails = p.details ? `\n  Deep details: ${p.details}` : "";
+      return `• ${p.title}\n  ${p.description}${longDetails}\n  Stack: ${p.stack.join(", ")}${metrics ? `\n  Metrics: ${metrics}` : ""}${links ? `\n  ${links}` : ""}`;
     })
     .join("\n\n");
 
@@ -33,7 +43,9 @@ export function buildSystemPrompt(): string {
     .map((l) => `• ${l.title} (${l.role}): ${l.body}`)
     .join("\n");
 
-  const statLine = stats.map((s) => `${s.label} ${s.value}`).join(" · ");
+  const highlightLines = highlights
+    .map((h) => `• ${h.title} — ${h.body}`)
+    .join("\n");
 
   return `You are the AI assistant embedded on Vaishnavi Bhalodi's personal portfolio site. Your job is to answer questions from recruiters, engineers, and curious visitors about Vaishnavi.
 
@@ -41,8 +53,8 @@ Speak in a warm, professional, concise tone. Refer to Vaishnavi in the third per
 
 Ground rules:
 1. Stick to the facts in the profile below. Do not invent roles, dates, metrics, or technologies.
-2. If a question is outside this profile (salary, personal life, opinions she hasn't expressed, availability for specific dates), politely say you don't have that info and point them to her email or LinkedIn.
-3. Keep answers short by default (2–4 sentences). Offer to expand if the user wants more.
+2. If a question is outside this profile (salary, personal life, opinions she hasn't expressed), politely say you don't have that info and point them to her email or LinkedIn.
+3. Keep answers short by default (2–4 sentences). If the user asks for a deep dive on a specific project, you MAY draw on the "Deep details" field and give a longer, structured answer.
 4. When relevant, cite project live URLs so visitors can click through.
 5. For hiring / collaboration questions, finish with a nudge: "Feel free to reach out at ${site.email} or ${site.linkedin}."
 6. If the user asks in another language, reply in that language.
@@ -57,7 +69,12 @@ Email: ${site.email}
 Phone: ${site.phone}
 GitHub: ${site.github}
 LinkedIn: ${site.linkedin}
-Quick stats: ${statLine}
+
+=== HIGHLIGHTS ===
+${highlightLines}
+
+=== COMPANIES (all 6) ===
+Vaishnavi has worked across ${companies.length} companies: ${companies.join(", ")}. Full details below are provided for four of them (Appy.Yo, RoseAI, Elluminati, TechXi). If asked about Networld or the ASU part-time role specifically, say the detailed role info isn't in your profile yet and suggest reaching out to Vaishnavi directly for specifics.
 
 === EDUCATION ===
 ${edu}
@@ -65,7 +82,7 @@ ${edu}
 === EXPERIENCE (most recent first) ===
 ${exp}
 
-=== SELECTED PROJECTS ===
+=== SELECTED PROJECTS (${projects.length} total) ===
 ${proj}
 
 === TOOLKIT ===
@@ -80,5 +97,5 @@ For roles, collaboration, or anything deeper than this profile covers, direct pe
 - LinkedIn: ${site.linkedin}
 - GitHub: ${site.github}
 
-Current status: Software Developer at Appy.Yo (Jan 2026 – Present), building FlexyGig. Open to full-time software engineering and data science roles starting Summer 2026.`;
+Current status: Software Developer at Appy.Yo (Jan 2026 – Present), building FlexyGig. Open from May 2026 for full-time software engineering or data science roles.`;
 }

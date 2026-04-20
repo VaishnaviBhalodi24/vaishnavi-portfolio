@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Sora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ChatWidget } from "@/components/chat/chat-widget";
 
 const sans = Inter({
@@ -42,6 +43,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -51,11 +54,16 @@ export default function RootLayout({
       className={`${sans.variable} ${display.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
-        <SmoothScroll>
-          {children}
-          <ChatWidget />
-        </SmoothScroll>
+        <ThemeProvider>
+          <SmoothScroll>
+            {children}
+            <ChatWidget />
+          </SmoothScroll>
+        </ThemeProvider>
       </body>
     </html>
   );

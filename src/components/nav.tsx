@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ResumeTrigger } from "@/components/resume-trigger";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -51,9 +52,12 @@ export function Nav() {
           ))}
         </nav>
 
-        <ResumeTrigger className="rounded-md border border-[var(--line-strong)] px-4 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]">
-          Résumé
-        </ResumeTrigger>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <ResumeTrigger className="rounded-md border border-[var(--line-strong)] px-4 py-1.5 text-sm text-[var(--ink)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]">
+            Résumé
+          </ResumeTrigger>
+        </div>
       </div>
     </header>
   );
