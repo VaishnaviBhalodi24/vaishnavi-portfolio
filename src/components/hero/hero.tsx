@@ -25,7 +25,7 @@ export function Hero() {
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
               <span className="text-xs text-[var(--ink-soft)]">
-                Available for Summer &apos;26 full-time roles
+                Available for full-time roles
               </span>
             </motion.div>
 
