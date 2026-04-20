@@ -189,6 +189,7 @@ export const projects: Project[] = [
     featured: true,
     gradient: ["#ef4444", "#f59e0b"],
     embeddable: false,
+    thumbnail: "/projects/radiate-sign.png",
   },
   {
     id: "graph-analytics",

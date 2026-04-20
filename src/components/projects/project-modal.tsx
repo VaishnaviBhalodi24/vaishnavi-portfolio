@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, X } from "lucide-react";
+import Image from "next/image";
 import { GithubIcon } from "@/components/brand-icons";
 import type { Project } from "@/lib/data";
 
@@ -187,9 +188,37 @@ function Inner({ project, onClose }: { project: Project; onClose: () => void }) 
 }
 
 function FallbackPreview({ project }: { project: Project }) {
-  const [c1, c2] = project.gradient ?? ["#4f46e5", "#22d3ee"];
   const url = project.links.live!;
   const host = safeHost(url);
+
+  if (project.thumbnail) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative block aspect-[16/10] w-full overflow-hidden rounded-lg border border-[var(--line)]"
+      >
+        <Image
+          src={project.thumbnail}
+          alt={`${project.title} screenshot`}
+          fill
+          sizes="(max-width: 1024px) 100vw, 960px"
+          className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/70 via-black/10 to-transparent p-4">
+          <span className="mono text-[11px] uppercase tracking-[0.16em] text-white/85">
+            {host}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-md bg-white/95 px-3 py-1.5 text-xs font-medium text-black transition-transform group-hover:-translate-y-0.5">
+            Visit <ArrowUpRight className="h-3 w-3" />
+          </span>
+        </div>
+      </a>
+    );
+  }
+
+  const [c1, c2] = project.gradient ?? ["#4f46e5", "#22d3ee"];
   return (
     <a
       href={url}
