@@ -108,6 +108,7 @@ export type Project = {
   featured: boolean;
   thumbnail?: string;
   gradient?: [string, string];
+  embeddable?: boolean;
 };
 
 export const projects: Project[] = [
@@ -187,6 +188,7 @@ export const projects: Project[] = [
     links: { live: "https://www.radiatesign.ca/builder" },
     featured: true,
     gradient: ["#ef4444", "#f59e0b"],
+    embeddable: false,
   },
   {
     id: "graph-analytics",

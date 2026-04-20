@@ -172,7 +172,11 @@ function Inner({ project, onClose }: { project: Project; onClose: () => void }) 
                     <ArrowUpRight className="h-3 w-3" />
                   </a>
                 </div>
-                <LivePreview url={project.links.live} title={project.title} />
+                {project.embeddable === false ? (
+                  <FallbackPreview project={project} />
+                ) : (
+                  <LivePreview url={project.links.live} title={project.title} />
+                )}
               </div>
             )}
           </div>
@@ -180,6 +184,57 @@ function Inner({ project, onClose }: { project: Project; onClose: () => void }) 
       </motion.div>
     </motion.div>
   );
+}
+
+function FallbackPreview({ project }: { project: Project }) {
+  const [c1, c2] = project.gradient ?? ["#4f46e5", "#22d3ee"];
+  const url = project.links.live!;
+  const host = safeHost(url);
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative block aspect-[16/10] w-full overflow-hidden rounded-lg border border-[var(--line)]"
+      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage:
+            "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+      <div className="relative flex h-full w-full flex-col justify-between p-6 md:p-8">
+        <div className="flex items-center gap-2 text-xs text-white/80">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/80" />
+          <span className="mono uppercase tracking-[0.16em]">{host}</span>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-white/70">
+            Preview embedding disabled by host
+          </p>
+          <p className="display mt-2 text-2xl font-semibold text-white md:text-3xl">
+            Click to open {project.title}
+          </p>
+          <div className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-white/95 px-4 py-2 text-sm font-medium text-black transition-transform group-hover:-translate-y-0.5">
+            Visit live site
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </div>
+        </div>
+      </div>
+    </a>
+  );
+}
+
+function safeHost(url: string) {
+  try {
+    return new URL(url).host.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }
 
 function LivePreview({ url, title }: { url: string; title: string }) {
