@@ -66,7 +66,6 @@ Role: ${site.tagline}
 Headline: ${site.sub}
 Location: ${site.location}
 Email: ${site.email}
-Phone: ${site.phone}
 GitHub: ${site.github}
 LinkedIn: ${site.linkedin}
 

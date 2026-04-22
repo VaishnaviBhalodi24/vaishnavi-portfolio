@@ -64,7 +64,7 @@ export function Contact() {
 
         <footer className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-[var(--line)] pt-8 text-xs text-[var(--ink-mute)] md:flex-row">
           <span>© {new Date().getFullYear()} Vaishnavi Bhalodi</span>
-          <span>{site.location} · {site.phone}</span>
+          <span>{site.location}</span>
           <span>Built with Next.js · Hosted on Vercel</span>
         </footer>
       </div>

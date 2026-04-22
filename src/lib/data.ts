@@ -3,7 +3,6 @@ export const site = {
   shortName: "Vaishnavi",
   location: "Tempe, AZ",
   email: "vaishnavibhalodi1@gmail.com",
-  phone: "(623) 268-9550",
   github: "https://github.com/VaishnaviBhalodi24",
   linkedin: "https://www.linkedin.com/in/vaishnavi0124/",
   resume: "/Software_Resume.pdf",
